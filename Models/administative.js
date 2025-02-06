@@ -5,6 +5,7 @@ import { type } from "os";
     email: {type: String, required: true},
     password: {type: String, required: true},
     isAdmin: {type: Boolean, default: false},
+    image: {type: String, required: true}
 
  }, {timestamps:true});
  export const Administrative = mongoose.model('Administrative', administrativeSchema)
