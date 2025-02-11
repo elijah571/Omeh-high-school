@@ -50,7 +50,6 @@ export const createStudent = async (req, res) => {
     }
 };
 
-
 // Get All Students
 export const getAllStudents = async (req, res) => {
     try {
