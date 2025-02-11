@@ -16,4 +16,4 @@ reportRoute.put('/:studentId', updateStudentReport)
 //Delete all report
 reportRoute.delete('/', deleteAllReports)
 //Delete a student report
-reportRoute.delete('/:studeentId', deleteStudentReport)
+reportRoute.delete('/:studentId', deleteStudentReport)

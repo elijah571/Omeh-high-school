@@ -11,8 +11,8 @@ const reportSchema = new mongoose.Schema({
         ref: "Classroom", 
         required: true 
     },
-    year: { 
-        type: Number, 
+    term: { 
+        type: String, 
         required: true 
     },
     firstCA: {

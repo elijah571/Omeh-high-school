@@ -5,10 +5,10 @@ import { Classroom } from "../Models/classRoom_model.js";
 // Create Termly Report for a Student with auto-calculated total
 export const createReport = async (req, res) => {
     try {
-        const { studentId, classroomId, year, firstCA, secondCA, exam, teacherRemarks } = req.body;
+        const { studentId, classroomId, term, firstCA, secondCA, exam, teacherRemarks } = req.body;
 
         // Validate the input fields
-        if (!studentId || !classroomId || !year || !firstCA || !secondCA || !exam) {
+        if (!studentId || !classroomId || !term || !firstCA || !secondCA || !exam) {
             return res.status(400).json({ message: "All fields are required" });
         }
 
@@ -32,7 +32,7 @@ export const createReport = async (req, res) => {
         const report = new Report({
             student: studentId,
             classroom: classroomId,
-            year,
+            term,
             firstCA: firstCA,
             secondCA: secondCA,
             exam: exam,
@@ -69,19 +69,29 @@ export const getAllReports = async (req, res) => {
         res.status(500).json({ message: "Internal server error", error: error.message });
     }
 };
+
 // Get Student Report by Student ID
 export const getStudentReportById = async (req, res) => {
     try {
         const { studentId } = req.params;
 
-        const report = await Report.findOne({ student: studentId })
-            .populate('student')
-            .populate('classroom');
+        // Logging to debug and check if the studentId is coming as expected
+        console.log("Fetching report for Student ID:", studentId);
 
+        // Querying the report by studentId and populating student and classroom
+        const report = await Report.findOne({ student: studentId })
+            .populate('student')  // Ensure it's correctly populated
+            .populate('classroom'); // Ensure it's correctly populated
+
+        // Log the found report for debugging
+        console.log("Found Report:", report);
+
+        // If no report is found, return 404
         if (!report) {
             return res.status(404).json({ message: "Report not found for this student" });
         }
 
+        // Send the found report back in the response
         res.status(200).json({ report });
 
     } catch (error) {
@@ -148,10 +158,16 @@ export const updateStudentReport = async (req, res) => {
         res.status(500).json({ message: "Internal server error", error: error.message });
     }
 };
+
 // Delete All Reports
 export const deleteAllReports = async (req, res) => {
     try {
+        // Delete all reports from the database
         const result = await Report.deleteMany({});
+
+        if (result.deletedCount === 0) {
+            return res.status(404).json({ message: "No reports found to delete" });
+        }
 
         res.status(200).json({ message: `${result.deletedCount} reports deleted successfully` });
 
@@ -160,22 +176,35 @@ export const deleteAllReports = async (req, res) => {
         res.status(500).json({ message: "Internal server error", error: error.message });
     }
 };
- // Delete a Single Student's Report
+
+// Delete a Single Student's Report (only delete the report, not the student)
 export const deleteStudentReport = async (req, res) => {
     try {
-        const { studentId } = req.params;
+        const { studentId } = req.params; // Access studentId from route parameters
 
+        console.log("Attempting to delete report for student with ID:", studentId);
+
+        if (!studentId) {
+            return res.status(400).json({ message: "Student ID is required" });
+        }
+
+        // Find the student by ID to make sure the student exists
+        const student = await Student.findById(studentId);
+
+        if (!student) {
+            return res.status(404).json({ message: "Student not found" });
+        }
+
+        // Delete the associated report of the student first
         const report = await Report.findOneAndDelete({ student: studentId });
 
         if (!report) {
             return res.status(404).json({ message: "Report not found for this student" });
         }
 
-        res.status(200).json({ message: "Student report deleted successfully" });
-
+        res.status(200).json({ message: "Student's report successfully deleted" });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Internal server error", error: error.message });
     }
 };
- 
