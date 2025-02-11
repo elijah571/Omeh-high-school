@@ -11,6 +11,8 @@ import { classRoomRoute } from './Routes/classRoom_route.js';
 import { teachers_route } from './Routes/teachers_route.js';
 import { student_route } from './Routes/student_route.js';
 import { attendanceRoute } from './Routes/attendanve_route.js';
+import { reportRoute } from './Routes/report_route.js';
+
 
 dotenv.config();
 const PORT = process.env.PORT || 3000;
@@ -29,6 +31,7 @@ app.use("/api/class-room", classRoomRoute);
 app.use("/api/teacher", teachers_route);
 app.use("/api/student", student_route);
 app.use("/api/attendace", attendanceRoute);
+app.use("/api/report", reportRoute);
 app.use("/api/upload", uploadRoute);
 
 const __dirname = path.resolve();
