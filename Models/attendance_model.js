@@ -2,43 +2,46 @@ import mongoose from "mongoose";
 
 // Define the attendance schema
 const attendanceSchema = new mongoose.Schema({
-  students: [
-    { 
-      type: mongoose.Schema.Types.ObjectId, 
-      ref: "Student", 
-      required: true 
-    }
-  ],
-  date: {
-    type: Date,
-    required: true,
-  },
-  checkIn: {
-    type: String, 
-    required: true,
-  },
-  checkOut: {
-    type: String,
-    required: true,
-  },
-  attendanceStatus: [
-    {
-      student: {
-        type: mongoose.Schema.Types.ObjectId, 
-        ref: "Student",
+    classroomId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Classroom",  // Reference to the Classroom model
         required: true
-      },
-      status: {
-        type: String, 
-        enum: ['present', 'absent', 'late'], // Ensuring valid values for status
-        required: true
-      }
-    }
-  ]
+    },
+    students: [
+        { 
+            type: mongoose.Schema.Types.ObjectId, 
+            ref: "Student", 
+            required: true 
+        }
+    ],
+    date: {
+        type: Date,
+        required: true,
+    },
+    attendanceStatus: [
+        {
+            student: {
+                type: mongoose.Schema.Types.ObjectId, 
+                ref: "Student",
+                required: true
+            },
+            status: {
+                type: String, 
+                enum: ['present', 'absent', 'late'], 
+                required: true
+            },
+            checkIn: {
+                type: String,
+                required: function() { return this.status === 'present' || this.status === 'late'; }
+            },
+            checkOut: {
+                type: String,
+                required: function() { return this.status === 'present' || this.status === 'late'; }
+            }
+        }
+    ]
 }, { 
-  timestamps: true 
+    timestamps: true 
 });
 
-const Attendance = mongoose.model('Attendance', attendanceSchema);
-
-export default Attendance;
+export const Attendance = mongoose.model('Attendance', attendanceSchema);

@@ -1,10 +1,14 @@
 import express from 'express';
-import { createAttendance, getAttendanceByClassroomAndDate, getStudentAttendance, updateAttendance } from '../Controllers/attendance_controller.js';
+import { createAttendance, deleteAttendance, getAttendanceWithStudentInfo, getSingleStudentAttendance, updateAttendance } from '../Controllers/attendance_controller.js';
 
 
 export const attendanceRoute = express.Router();
 
 attendanceRoute.post('/mark-attendance', createAttendance);
 attendanceRoute.put('/:id', updateAttendance);
-attendanceRoute.get('/', getAttendanceByClassroomAndDate);
-attendanceRoute.get('/:id', getStudentAttendance);
+//Get all attendace
+attendanceRoute.get('/:classroomId', getAttendanceWithStudentInfo);
+//get a student attendence
+attendanceRoute.get('/:classroomId/:studentId', getSingleStudentAttendance);
+//Delete attendace
+attendanceRoute.delete('/:classroomId', deleteAttendance)
