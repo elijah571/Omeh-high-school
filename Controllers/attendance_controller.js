@@ -4,7 +4,6 @@ import {Attendance} from "../Models/attendance_model.js";
 
 // Create attendance
 
-// Create attendance
 export const createAttendance = async (req, res) => {
     try {
         const { classroomId, attendanceStatus } = req.body;

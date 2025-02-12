@@ -85,3 +85,28 @@ export const authorize = async (req, res, next) => {
         return res.status(500).json({ message: "Server error" });
     }
 };
+
+// Middleware to authorize classroom teachers only
+export const authorizeClassroomTeacher = async (req, res, next) => {
+    try {
+        const token = req.cookies?.token;
+
+        if (!token) {
+            return res.status(401).json({ message: "No token provided" });
+        }
+
+        // Verify the token
+        const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+        const teacher = await Teacher.findById(decodedToken.id);
+
+        if (!teacher || !teacher.isClassroom_Teacher) { 
+            return res.status(403).json({ message: "Access denied. Classroom teachers only" });
+        }
+
+        req.teacher = teacher;
+        next();
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: "Server error" });
+    }
+};

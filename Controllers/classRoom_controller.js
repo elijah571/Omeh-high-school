@@ -28,10 +28,12 @@ export const createClassroom = async (req, res) => {
 };
 
 // Assign Teacher to Classroom and Subject
+
 export const assignTeacherToClassroom = async (req, res) => {
     try {
         const { classroomId, subjectName, teacherId, schedule } = req.body;
 
+        // Check if all required fields are present
         if (!classroomId || !subjectName || !teacherId || !schedule) {
             return res.status(400).json({ message: "All fields are required" });
         }
@@ -52,7 +54,7 @@ export const assignTeacherToClassroom = async (req, res) => {
         let subject = classroom.subjects.find(sub => sub.subjectName === subjectName);
         
         if (subject) {
-            // If subject exists, just add the teacher to the teachers array and the schedule.
+            // If subject exists, add the teacher to the teachers array and the schedule.
             subject.teachers.push(teacherId);
             subject.schedule = [...subject.schedule, ...schedule]; // Append the new schedule items
         } else {
@@ -62,6 +64,7 @@ export const assignTeacherToClassroom = async (req, res) => {
                 teachers: [teacherId],
                 schedule
             };
+            
             classroom.subjects.push(subject);
         }
 
@@ -76,6 +79,7 @@ export const assignTeacherToClassroom = async (req, res) => {
         res.status(500).json({ message: "Internal server error", error: error.message });
     }
 };
+
 
 // Add Students to Classroom
 export const addStudentsToClassroom = async (req, res) => {

@@ -1,14 +1,15 @@
+import mongoose from "mongoose";
 import bcryptjs from 'bcryptjs';
 import { Teacher } from '../Models/teachers_model.js';
 import { generateToken } from '../Utils/generateToken.js';
 
 // Create Teacher
 export const createTeacher = async (req, res) => {
-    const {fullName, gender, email, password, phone, subject,} = req.fields;
+    const { fullName, gender, email, password, phone, subject } = req.fields;
     const image = req.files?.image ? req.files.image.path : null;
 
     try {
-        if (!fullName || !gender || !email || !password || !phone || !subject  || !image) {
+        if (!fullName || !gender || !email || !password || !phone || !subject || !image) {
             return res.status(400).json({ message: "All fields are required to be filled" });
         }
 
@@ -17,6 +18,7 @@ export const createTeacher = async (req, res) => {
             return res.status(400).json({ message: "Email already in use" });
         }
 
+        // Hash the password before saving
         const hashPassword = await bcryptjs.hash(password, 10);
 
         const teacher = new Teacher({
@@ -76,7 +78,6 @@ export const deleteTeacher = async (req, res) => {
         return res.status(500).json({ message: "Internal server error", error: error.message });
     }
 };
-
 // Teacher Login
 export const teacherLogin = async (req, res) => {
     const { email, password } = req.body;
@@ -87,11 +88,18 @@ export const teacherLogin = async (req, res) => {
             return res.status(400).json({ message: "Invalid email" });
         }
 
+        console.log("Entered password:", password);
+        console.log("Stored hashed password:", teacher.password);
+
+        // Compare entered password with the stored hash
         const isCorrectPassword = await bcryptjs.compare(password, teacher.password);
+        console.log("Password comparison result:", isCorrectPassword); // Log comparison result
+
         if (!isCorrectPassword) {
             return res.status(400).json({ message: "Invalid password" });
         }
 
+        // Generate token on successful login
         generateToken(res, { id: teacher._id });
 
         return res.status(200).json({
@@ -108,6 +116,7 @@ export const teacherLogin = async (req, res) => {
     }
 };
 
+
 // Logout Teacher
 export const logoutTeacher = async (req, res) => {
     res.clearCookie('token');
@@ -122,6 +131,7 @@ export const updateTeacher = async (req, res) => {
             return res.status(404).json({ message: "Teacher not found" });
         }
 
+        // Update the fields if provided in the request body
         if (req.body.fullName) teacher.fullName = req.body.fullName;
         if (req.body.gender) teacher.gender = req.body.gender;
         if (req.body.email) teacher.email = req.body.email;
@@ -129,6 +139,18 @@ export const updateTeacher = async (req, res) => {
         if (req.body.subject) teacher.subject = req.body.subject;
         if (req.body.image) teacher.image = req.body.image;
 
+        // If a new password is provided, hash it before saving
+        if (req.body.password) {
+            const hashPassword = await bcryptjs.hash(req.body.password, 10);
+            teacher.password = hashPassword;
+        }
+
+        // Ensure the isClassroom_Teacher field is updated
+        if (typeof req.body.isClassroom_Teacher === "boolean") {
+            teacher.isClassroom_Teacher = req.body.isClassroom_Teacher;
+        }
+
+        // Save the updated teacher record
         await teacher.save();
 
         return res.status(200).json({
@@ -141,6 +163,7 @@ export const updateTeacher = async (req, res) => {
                 phone: teacher.phone,
                 subject: teacher.subject,
                 assignment: teacher.assignment,
+                isClassroom_Teacher: teacher.isClassroom_Teacher, // Include the updated field
                 image: teacher.image || null
             }
         });

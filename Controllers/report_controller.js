@@ -130,6 +130,7 @@ export const updateStudentReport = async (req, res) => {
             return res.status(400).json({ message: "No fields provided to update" });
         }
 
+        
         const report = await Report.findOne({ student: studentId });
 
         if (!report) {

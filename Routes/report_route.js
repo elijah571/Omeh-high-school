@@ -1,19 +1,28 @@
 import express from 'express';
-import { createReport, deleteAllReports, deleteStudentReport, getAllReports, getStudentReportById, updateAllReports, updateStudentReport } from '../Controllers/report_controller.js';
+import {
+     createReport, 
+     deleteAllReports, 
+     deleteStudentReport, 
+     getAllReports, 
+     getStudentReportById, 
+     updateAllReports, 
+     updateStudentReport
+     } from '../Controllers/report_controller.js';
+import { authorize } from '../Middleware/authourize.js';
 
 export const reportRoute = express.Router()
 
 //create report
 
-reportRoute.post('/', createReport);
+reportRoute.post('/', authorize, createReport);
 //get all report
-reportRoute.get('/', getAllReports);
+reportRoute.get('/', authorize,  getAllReports);
 //get a student report
-reportRoute.get('/:studentId', getStudentReportById)
+reportRoute.get('/:studentId', authorize, getStudentReportById)
 //Update all reports
-reportRoute.put('/', updateAllReports);
-reportRoute.put('/:studentId', updateStudentReport)
+reportRoute.put('/', authorize, updateAllReports);
+reportRoute.put('/:studentId', authorize, updateStudentReport)
 //Delete all report
-reportRoute.delete('/', deleteAllReports)
+reportRoute.delete('/', authorize, deleteAllReports)
 //Delete a student report
-reportRoute.delete('/:studentId', deleteStudentReport)
+reportRoute.delete('/:studentId', authorize, deleteStudentReport)

@@ -8,6 +8,7 @@ const teacherSchema = new mongoose.Schema({
     phone: {type: String, required: true},
     subject: {type: String, required: true},
     role: {type: String,   default:"Teacher", required: true},
+    isClassroom_Teacher:{type: Boolean, default: false, required: true},
     image:{type: String, required: true}
 
 },{timestamps: true})
