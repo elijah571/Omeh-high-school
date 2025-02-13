@@ -8,8 +8,8 @@ export const attendanceRoute = express.Router();
 attendanceRoute.post('/mark-attendance', authorize, createAttendance);
 attendanceRoute.put('/:id', authorize, updateAttendance);
 //Get all attendace
-attendanceRoute.get('/:classroomId', authorize, getAttendanceWithStudentInfo);
+attendanceRoute.get('/:classroomId',  getAttendanceWithStudentInfo);
 //get a student attendence
-attendanceRoute.get('/:classroomId/:studentId',  authorize, getSingleStudentAttendance);
+attendanceRoute.get('/:classroomId/:studentId',   getSingleStudentAttendance);
 //Delete attendace
 attendanceRoute.delete('/:classroomId', authorize, deleteAttendance)
