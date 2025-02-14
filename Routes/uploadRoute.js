@@ -8,7 +8,6 @@ const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "uploads/");
   },
-
   filename: (req, file, cb) => {
     const extname = path.extname(file.originalname);
     cb(null, `${file.fieldname}-${Date.now()}${extname}`);
@@ -35,15 +34,17 @@ const uploadSingleImage = upload.single("image");
 router.post("/", (req, res) => {
   uploadSingleImage(req, res, (err) => {
     if (err) {
-      res.status(400).send({ message: err.message });
-    } else if (req.file) {
-      res.status(200).send({
-        message: "Image uploaded successfully",
-        image: `/${req.file.path}`,
-      });
-    } else {
-      res.status(400).send({ message: "No image file provided" });
+      return res.status(400).json({ message: err.message });
     }
+    if (req.file) {
+      // Construct the full URL for the uploaded image
+      const fileUrl = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
+      return res.status(200).json({
+        message: "Image uploaded successfully",
+        image: fileUrl, // Full image URL
+      });
+    }
+    res.status(400).json({ message: "No image file provided" });
   });
 });
 
